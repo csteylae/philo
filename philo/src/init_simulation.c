@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 13:22:05 by csteylae          #+#    #+#             */
-/*   Updated: 2025/01/23 18:16:07 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/01/24 15:43:59 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,25 +28,39 @@ static bool	init_philo(t_simulation *sim)
 		sim->philo[i].nb = i;
 		sim->philo[i].state = HUNGRY;
 		sim->philo[i].sim = sim;
+		sim->philo[i].last_meal = NO_MEAL_YET;
 		i++;
 	}
 	return (true);
 }
 
-bool	init_mutex(t_simulation *sim)
+static bool	init_mutex(pthread_mutex_t *mutex)
+{
+	if (pthread_mutex_init(mutex, NULL) != 0)
+	{
+		write(STDERR_FILENO, MUTEX_INIT_ERROR, ft_strlen(MUTEX_INIT_ERROR));
+		return (false);
+	}
+	return (true);
+}
+
+static bool	init_fork(t_simulation *sim)
 {
 	int	i;
-	int	check;
 
 	i = 0;
-	check = 0;
+	sim->fork = malloc(sizeof(pthread_mutex_t) * sim->rules.nb_of_philo);
+	if (!sim->fork)
+	{
+	//	free(sim->philo);
+		write(STDERR_FILENO, MALLOC_ERROR, ft_strlen(MALLOC_ERROR));
+		return (false);
+	}
 	while (i != sim->rules.nb_of_philo)
 	{
-		check = pthread_mutex_init(&sim->fork[i], NULL);
-		if (check != 0)
+		if (!init_mutex(&sim->fork[i]))
 		{
-			//free evrything();
-			write(STDERR_FILENO, "mutex error", ft_strlen("mutex error"));
+			//free all the already mutex initialized
 			return (false);
 		}
 		i++;
@@ -54,39 +68,18 @@ bool	init_mutex(t_simulation *sim)
 	return (true);
 }
 
-static bool	init_fork(t_simulation *sim)
-{
-	sim->fork = malloc(sizeof(pthread_mutex_t) * sim->rules.nb_of_philo);
-	if (!sim->fork)
-	{
-	//	free(sim->philo);
-		perror("malloc");
-		return (false);
-	}
-	if (!init_mutex(sim))
-		return (false);
-	return (true);
-}
-
 bool	setup_dinner_table(char **argv, t_simulation *sim)
 {
-	t_rules	rules;
-	int		check;
-
-	check = 0;
-	if (!get_rules(argv, &rules))
+	if (!get_rules(argv, &sim->rules))
 		return (false);
-	sim->rules = rules;
 	if (!init_philo(sim))
 		return (false);
 	if (!init_fork(sim)) 
 		return (false);
-	check = pthread_mutex_init(&sim->death_check, NULL);
-	if (check != 0)
-	{
-		//free ervytting
+	if (!init_mutex(&sim->write_msg))
 		return (false);
-	}
+	if (!init_mutex(&sim->death_check))
+		return (false);
 	sim->is_dead = false;
 	return (true);
 }

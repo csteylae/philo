@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 11:53:21 by csteylae          #+#    #+#             */
-/*   Updated: 2025/01/23 17:58:30 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/01/24 15:43:49 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,16 +43,16 @@ typedef struct s_philo
 
 typedef struct s_simulation
 {
-	t_rules			rules;
+	t_rules			rules; //no malloc
 	t_philo			*philo;
 	pthread_mutex_t	*fork;
+	pthread_mutex_t	write_msg;
 	pthread_mutex_t	death_check;
 	bool			is_dead;
 }	t_simulation;
 
 bool	get_rules(char **argv, t_rules *r);
 bool	setup_dinner_table(char **argv, t_simulation *sim);
-bool	init_mutex(t_simulation *sim);
 int		ft_strlen(char *str);
 
 # define FAIL -1
@@ -62,5 +62,8 @@ int		ft_strlen(char *str);
 # define IS_EATING 1
 # define IS_THINKING 2
 # define IS_SLEEPING 3
+# define NO_MEAL_YET -1
+# define MUTEX_INIT_ERROR "Error when pthread_init_mutex"
+# define MALLOC_ERROR "Error cannot malloc"
 
 #endif
