@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 13:06:38 by csteylae          #+#    #+#             */
-/*   Updated: 2025/01/17 13:15:33 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/01/22 13:22:38 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,29 +65,29 @@ static int	init_var(char *str)
 	return (ret);
 }
 
-int	get_rules(char **argv, t_rules *rule)
+bool	get_rules(char **argv, t_rules *rule)
 {
 	rule->nb_of_philo = init_var(argv[1]);
 	if (rule->nb_of_philo <= 0)
 	{
 		if (rule->nb_of_philo == 0)
 			printf("Error. Must be at least 1 philo\n");
-		return (FAIL);
+		return (false);
 	}
 	rule->time_to_die = init_var(argv[2]);
 	if (rule->time_to_die < 0)
-		return (FAIL);
+		return (false);
 	rule->time_to_eat = init_var(argv[3]);
 	if(rule->time_to_eat < 0)
-		return (FAIL);
+		return (false);
 	rule->time_to_sleep = init_var(argv[4]);
 	if (rule->time_to_sleep < 0)
-		return (FAIL);
+		return (false);
 	if (argv[5])
 		rule->nb_of_meal = init_var(argv[5]);
 	else
 		rule->nb_of_meal = UNLIMITED_MEAL;
 	if (rule->nb_of_meal < 0)
-		return (FAIL);
-	return (SUCCESS);
+		return (false);
+	return (true);
 }
