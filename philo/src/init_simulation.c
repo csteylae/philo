@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 13:22:05 by csteylae          #+#    #+#             */
-/*   Updated: 2025/01/27 15:58:13 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/01/27 17:08:29 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static bool	init_philo(t_simulation *sim)
 		sim->philo[i].nb = i;
 		sim->philo[i].state = HUNGRY;
 		sim->philo[i].sim = sim;
-		sim->philo[i].last_meal_usec = NO_MEAL_YET;
+		//sim->philo[i].last_meal = NO_MEAL_YET;
 		i++;
 	}
 	return (true);

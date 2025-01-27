@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 15:49:16 by csteylae          #+#    #+#             */
-/*   Updated: 2025/01/27 16:42:00 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/01/27 17:40:13 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,30 +33,27 @@ int	ft_strlen(char *str)
 	return (i);
 }
 
+
 bool	someone_is_dead(t_philo *philo)
 {
-	struct timeval current_time;
-	bool	res;
+	bool				res;
+	struct timeval_t	current_time;
 
 	pthread_mutex_lock(&philo->sim->death_check);
 	if (philo->sim->is_dead == true)
-		res = true;
-	else
 	{
-		gettimeofday(&current_time, NULL);
-		if (current_time.tv_usec * 1000 < (philo->last_meal_usec * 1000) + philo->sim->rules.time_to_die)
-			res = false;
-		else
-		{
-			res = true;
-			pthread_mutex_lock(&philo->sim->write_msg);
-			printf("%lu %i died\n", current_time.tv_usec * 1000, philo->nb);
-			pthread_mutex_unlock(&philo->sim->write_msg);
-		}
+		pthread_mutex_unlock(&philo->sim->death_check);
+		return (true);
 	}
-	philo->sim->is_dead = res;
-	pthread_mutex_unlock(&philo->sim->death_check);
-	return (res);
+}
+
+long long	convert_into_ms(struct timeval current_time, struct timeval starting_time)
+{
+	long long	timestamp_in_ms;
+	//should now also convert starting time into ms and then substract it to get the time since the simu begin to better tracking of the philo
+
+	timestamp_in_ms = (current_time.tv_sec * 1000) + (current_time.tv_usec / 1000);
+	return (timestamp_in_ms);
 }
 
 void	takes_two_fork(t_philo *philo)
@@ -64,7 +61,6 @@ void	takes_two_fork(t_philo *philo)
 	int				left;
 	int				right;
 	struct timeval	current_time;
-	suseconds_t		start_eating_time;
 	int				nb_of_meal;
 
 	left = philo->nb - 1;
@@ -78,42 +74,44 @@ void	takes_two_fork(t_philo *philo)
 	{
 		if (someone_is_dead(philo))
 			break ;
+
 		if (philo->sim->rules.nb_of_meal != UNLIMITED_MEAL && nb_of_meal == philo->sim->rules.nb_of_meal)
 			break ;
+
 		nb_of_meal++;
+
 		if (pthread_mutex_lock(&philo->sim->fork[left]) == 0
 			&& pthread_mutex_lock(&philo->sim->fork[right]) == 0)
 		{
 			if (gettimeofday(&current_time, NULL) != SUCCESS)
 				return ;
 			pthread_mutex_lock(&philo->sim->write_msg);
-			printf("%lu %i has taken a fork\n", current_time.tv_usec * 1000, philo->nb); 
+			printf("%lu %i has taken a fork\n", convert_into_ms(current_time), philo->nb); 
 			pthread_mutex_unlock(&philo->sim->write_msg);
-	
+
 			if (gettimeofday(&current_time, NULL) != SUCCESS)
 				return ; //ERROR
-			start_eating_time = current_time.tv_usec;
+			start_eating_time = current_time;
+			philo->last_meal = current_time;
 			pthread_mutex_lock(&philo->sim->write_msg);
-			printf("%lu %i is eating\n", current_time.tv_usec * 1000, philo->nb); 
+			printf("%lu %i is eating\n", convert_into_ms(current_time), philo->nb); 
 			pthread_mutex_unlock(&philo->sim->write_msg);
-			while (current_time.tv_usec <= (start_eating_time + (philo->sim->rules.time_to_eat / 1000)))
 			{
-				if (gettimeofday(&current_time, NULL) != SUCCESS)
-					return ;
+				usleep(philo->sim->rules.time_to_eat / 1000);
 			}
+		//sto eating,free the forks	
 			pthread_mutex_unlock(&philo->sim->fork[left]);
 			pthread_mutex_unlock(&philo->sim->fork[right]);
-	
+		//start to sleep
 			gettimeofday(&current_time, NULL);
-			philo->last_meal_usec = current_time.tv_usec;
 			pthread_mutex_lock(&philo->sim->write_msg);
-			printf("%lu %i is sleeping \n", current_time.tv_usec * 1000, philo->nb); 
+			printf("%lu %i is sleeping \n", convert_into_msg(current_time), philo->nb); 
 			pthread_mutex_unlock(&philo->sim->write_msg);
-
 			usleep(philo->sim->rules.time_to_sleep / 1000);
 
+		//end of sleep, philo starts thinking and look for eating
 			pthread_mutex_lock(&philo->sim->write_msg);
-			printf("%lu %i is thinking \n", current_time.tv_usec * 1000, philo->nb); 
+			printf("%lu %i is thinking \n", convert_into_ms(current_time), philo->nb); 
 			pthread_mutex_unlock(&philo->sim->write_msg);
 		}
 		else
@@ -133,7 +131,7 @@ void	*start_routine(void *arg)
 		printf("Sycall error. End of simulation\n");
 		return (NULL);
 	}
-	philo->last_meal_usec = current_time.tv_usec;
+	philo->last_meal = current_time;
 	if (philo->nb % 2 == 0)
 	{
 		usleep(1000);
@@ -160,6 +158,11 @@ void	launch_simulation(t_simulation *sim)
 
 	i = 0;
 	check = 0;
+	if (gettimeofday(&sim->starting_time, NULL) != SUCCESS)
+	{
+		printf("syscall error\n");
+		return ;
+	}
 	while (i != sim->rules.nb_of_philo)
 	{
 		check = pthread_create(&sim->philo[i].tid, NULL, &start_routine, &sim->philo[i]);
