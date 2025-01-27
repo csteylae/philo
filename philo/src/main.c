@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 15:49:16 by csteylae          #+#    #+#             */
-/*   Updated: 2025/01/24 16:24:39 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/01/27 16:42:00 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,28 +33,117 @@ int	ft_strlen(char *str)
 	return (i);
 }
 
+bool	someone_is_dead(t_philo *philo)
+{
+	struct timeval current_time;
+	bool	res;
+
+	pthread_mutex_lock(&philo->sim->death_check);
+	if (philo->sim->is_dead == true)
+		res = true;
+	else
+	{
+		gettimeofday(&current_time, NULL);
+		if (current_time.tv_usec * 1000 < (philo->last_meal_usec * 1000) + philo->sim->rules.time_to_die)
+			res = false;
+		else
+		{
+			res = true;
+			pthread_mutex_lock(&philo->sim->write_msg);
+			printf("%lu %i died\n", current_time.tv_usec * 1000, philo->nb);
+			pthread_mutex_unlock(&philo->sim->write_msg);
+		}
+	}
+	philo->sim->is_dead = res;
+	pthread_mutex_unlock(&philo->sim->death_check);
+	return (res);
+}
+
+void	takes_two_fork(t_philo *philo)
+{
+	int				left;
+	int				right;
+	struct timeval	current_time;
+	suseconds_t		start_eating_time;
+	int				nb_of_meal;
+
+	left = philo->nb - 1;
+	right = philo->nb;
+	nb_of_meal = 0;
+	if (right == 0)
+	{
+		left = philo->sim->rules.nb_of_philo - 1;
+	}
+	while (true)
+	{
+		if (someone_is_dead(philo))
+			break ;
+		if (philo->sim->rules.nb_of_meal != UNLIMITED_MEAL && nb_of_meal == philo->sim->rules.nb_of_meal)
+			break ;
+		nb_of_meal++;
+		if (pthread_mutex_lock(&philo->sim->fork[left]) == 0
+			&& pthread_mutex_lock(&philo->sim->fork[right]) == 0)
+		{
+			if (gettimeofday(&current_time, NULL) != SUCCESS)
+				return ;
+			pthread_mutex_lock(&philo->sim->write_msg);
+			printf("%lu %i has taken a fork\n", current_time.tv_usec * 1000, philo->nb); 
+			pthread_mutex_unlock(&philo->sim->write_msg);
+	
+			if (gettimeofday(&current_time, NULL) != SUCCESS)
+				return ; //ERROR
+			start_eating_time = current_time.tv_usec;
+			pthread_mutex_lock(&philo->sim->write_msg);
+			printf("%lu %i is eating\n", current_time.tv_usec * 1000, philo->nb); 
+			pthread_mutex_unlock(&philo->sim->write_msg);
+			while (current_time.tv_usec <= (start_eating_time + (philo->sim->rules.time_to_eat / 1000)))
+			{
+				if (gettimeofday(&current_time, NULL) != SUCCESS)
+					return ;
+			}
+			pthread_mutex_unlock(&philo->sim->fork[left]);
+			pthread_mutex_unlock(&philo->sim->fork[right]);
+	
+			gettimeofday(&current_time, NULL);
+			philo->last_meal_usec = current_time.tv_usec;
+			pthread_mutex_lock(&philo->sim->write_msg);
+			printf("%lu %i is sleeping \n", current_time.tv_usec * 1000, philo->nb); 
+			pthread_mutex_unlock(&philo->sim->write_msg);
+
+			usleep(philo->sim->rules.time_to_sleep / 1000);
+
+			pthread_mutex_lock(&philo->sim->write_msg);
+			printf("%lu %i is thinking \n", current_time.tv_usec * 1000, philo->nb); 
+			pthread_mutex_unlock(&philo->sim->write_msg);
+		}
+		else
+			continue ;
+	}
+	return ;
+}
+
 void	*start_routine(void *arg)
 {
-	t_philo	*philo;
-	int		nb_of_meal;
+	t_philo			*philo;
+	struct timeval	current_time;
 
 	philo = arg;
-	nb_of_meal = 0;
+	if (gettimeofday(&current_time, NULL) != SUCCESS)
+	{
+		printf("Sycall error. End of simulation\n");
+		return (NULL);
+	}
+	philo->last_meal_usec = current_time.tv_usec;
 	if (philo->nb % 2 == 0)
 	{
 		usleep(1000);
 	}
-	while (true)
-	{
-		if (nb_of_meal == sim->nb_of_meal && sim->nb_of_meal != UNLIMITED_MEAL)
-			break;
-		takes_two_fork(philo);
-		start_eating();
-		release_forks();
-		start_sleeping();
-		start_thinking();
-		nb_of_meal++;
-	}
+	takes_two_fork(philo);
+//		start_eating();
+//		release_forks();
+//		start_sleeping();
+//		start_thinking();
+//		nb_of_meal++;
 	return (NULL);
 	// the unit time are expressed in milliseconds
 	//eat() => take rigt and left fork, one in each hand. every philo need to eat

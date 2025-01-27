@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 11:53:21 by csteylae          #+#    #+#             */
-/*   Updated: 2025/01/24 15:43:49 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/01/27 16:15:34 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <stdio.h>
 # include <pthread.h>
 # include <stdbool.h>
+# include <sys/time.h>
 
 struct	s_simulation;
 
@@ -34,11 +35,11 @@ typedef struct s_rules
 
 typedef struct s_philo
 {
-	pthread_t			tid;
-	int					nb;
-	int					state;
-	int					last_meal;
-	struct s_simulation	*sim;
+	pthread_t					tid;
+	int							nb;
+	int							state;
+	suseconds_t					last_meal_usec;
+	struct s_simulation			*sim;
 }	t_philo;
 
 typedef struct s_simulation
