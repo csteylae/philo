@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 13:22:05 by csteylae          #+#    #+#             */
-/*   Updated: 2025/01/27 17:08:29 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/11 18:23:08 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static bool	init_philo(t_simulation *sim)
 	}
 	while (i != sim->rules.nb_of_philo)
 	{
-		sim->philo[i].nb = i;
+		sim->philo[i].nb = i + 1;
 		sim->philo[i].state = HUNGRY;
 		sim->philo[i].sim = sim;
 		//sim->philo[i].last_meal = NO_MEAL_YET;

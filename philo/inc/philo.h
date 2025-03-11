@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 11:53:21 by csteylae          #+#    #+#             */
-/*   Updated: 2025/01/27 17:37:11 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/11 21:26:53 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,22 +35,22 @@ typedef struct s_rules
 
 typedef struct s_philo
 {
-	pthread_t						tid;
-	int								nb;
-	int								state;
-	struct timeval					last_meal;
-	struct s_simulation				*sim;
+	pthread_t			tid;
+	int					nb;
+	int					state;
+	struct timeval		last_meal;
+	struct s_simulation	*sim;
 }	t_philo;
 
 typedef struct s_simulation
 {
-	struct timeval_t	starting_time;
-	t_rules				rules; //no malloc
-	t_philo				*philo;
-	pthread_mutex_t		*fork;
-	pthread_mutex_t		write_msg;
-	pthread_mutex_t		death_check;
-	bool				is_dead;
+	struct timeval	starting_time;
+	t_rules			rules;
+	t_philo			*philo;
+	pthread_mutex_t	*fork;
+	pthread_mutex_t	write_msg;
+	pthread_mutex_t	death_check;
+	bool			is_dead;
 }	t_simulation;
 
 bool	get_rules(char **argv, t_rules *r);
