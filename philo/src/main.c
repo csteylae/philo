@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 15:49:16 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/13 17:37:15 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/13 20:02:40 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,14 +88,16 @@ void	start_thinking(t_philo *philo)
 	usleep(1000);
 }
 
-bool	someone_died(t_philo *philo)
+bool	someone_is_dead(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->sim->death_check);
-	if (philo->sim->is_dead == true)
-		return (true);
-	else
+	if (philo->sim->is_dead)
 	{
-
+		pthread_mutex_unlock(&philo->sim->death_check);
+		return (true);
+	}
+	pthread_mutex_unlock(&philo->sim->death_check);
+	return (false);
 }
 
 void	*start_dinner(void *arg)
@@ -105,15 +107,15 @@ void	*start_dinner(void *arg)
 
 	philo = arg;
 	nb_of_meal = 0;
-	 init_last_meal(philo);
+	init_last_meal(philo);
 	if (philo->nb % 2 == 0)
 	{
 		usleep(1000);
 	}
 	while (1)//sim_is_running(philo))
 	{
-		if (someone died(philo))
-			return (NULL);
+		if (someone_is_dead(philo))
+			break ;
 		if (locks_two_forks_in_order(philo))
 		{
 			start_eating(philo);
@@ -126,6 +128,30 @@ void	*start_dinner(void *arg)
 		start_thinking(philo);
 	}
 	return (NULL);
+}
+
+void	monitoring(t_simulation *sim)
+{
+	int				i;
+	long			timestamp;
+
+	i = 0;
+	while (1)
+	{
+		if (i >= sim->rules.nb_of_philo)
+			i = 0;
+		timestamp = get_timestamp_ms(sim);
+		if (timestamp >= sim->rules.time_to_die)
+		{
+			pthread_mutex_lock(&sim->death_check);
+			sim->is_dead = true;
+			pthread_mutex_unlock(&sim->death_check);
+		//	printf("%lu philo %i died\n", timestamp, i);
+			log_status(&sim->philo[i], "died");
+			return ;
+		}
+		i++;
+	}
 }
 
 void	launch_simulation(t_simulation *sim)
@@ -150,6 +176,7 @@ void	launch_simulation(t_simulation *sim)
 		}
 		i++;
 	}
+	monitoring(sim);
 	i = 0;
 	ret = 0;
 	while (i != sim->rules.nb_of_philo)

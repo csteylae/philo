@@ -1,7 +1,7 @@
 NAME=philo
 
 CC= cc
-CFLAGS= -Wall -Wextra -Werror -pthread -g -fsanitize=thread
+CFLAGS= -Wall -Wextra -Werror -pthread -g -fsanitize=address
 DEBUG_FLAG= -fsanitize=thread
 
 SRCS= src/main.c \
