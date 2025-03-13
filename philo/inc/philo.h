@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 11:53:21 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/11 21:26:53 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/13 16:43:52 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,11 @@ typedef struct s_simulation
 }	t_simulation;
 
 bool	get_rules(char **argv, t_rules *r);
+void	init_last_meal(t_philo *philo);
 bool	setup_dinner_table(char **argv, t_simulation *sim);
 int		ft_strlen(char *str);
+long	get_timestamp_in_ms(t_simulation *sim);
+void	log_status(t_philo *philo, char *str);
 
 # define FAIL -1
 # define SUCCESS 0

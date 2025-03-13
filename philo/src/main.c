@@ -6,76 +6,11 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 15:49:16 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/11 21:40:50 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/13 17:37:15 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/philo.h"
-
-void	print_rules(t_rules rule)
-{
-	printf("nb of philo : %i\n", rule.nb_of_philo);
-	printf("time_to_die : %i\n", rule.time_to_die);
-	printf("time_to_eat : %i\n", rule.time_to_eat);
-	printf("time_to_sleep : %i\n", rule.time_to_sleep);
-	printf("nb_of_meal : %i\n", rule.nb_of_meal);
-}
-
-int	ft_strlen(char *str)
-{
-	int	i;
-
-	i = 0;
-	if (!str)
-		return (0);
-	while (str[i])
-		i++;
-	return (i);
-}
-
-long	get_timestamp_ms(t_simulation *sim)
-{
-	struct timeval	current_time;
-	long			sec_diff;
-	long			usec_diff;
-	long			timestamp_ms;
-
-	if (gettimeofday(&current_time, NULL) != SUCCESS)
-	{
-		return (-1);
-	}
-	sec_diff = current_time.tv_sec - sim->starting_time.tv_sec;
-	usec_diff = current_time.tv_usec - sim->starting_time.tv_usec;
-	if (usec_diff < 0)
-	{
-		sec_diff -= 1;
-		usec_diff += 1000000;
-	}
-	timestamp_ms = (sec_diff * 1000) + (usec_diff / 1000);
-	return (timestamp_ms);
-}
-
-void	log_status(t_philo *philo, char *str)
-{
-	long			timestamp_in_ms;
-	struct timeval	current_time;
-
-	timestamp_in_ms = get_timestamp_ms(philo->sim);
-	gettimeofday(&current_time, NULL);
-	if (pthread_mutex_lock(&philo->sim->write_msg))
-		printf("%lu %i %s\n", timestamp_in_ms, philo->nb, str);
-	pthread_mutex_unlock(&philo->sim->write_msg);
-}
-	
-static void	init_last_meal(t_philo *philo)
-{
-	struct timeval	current_time;
-
-	gettimeofday(&current_time, NULL);
-	pthread_mutex_lock(&philo->sim->death_check);
-	philo->last_meal = current_time;
-	pthread_mutex_unlock(&philo->sim->death_check);
-}
 
 static bool	nb_of_meal_reached(t_philo *philo, int nb_of_meal)
 {
@@ -114,8 +49,53 @@ static bool	locks_two_forks_in_order(t_philo *philo)
 		pthread_mutex_unlock(&philo->sim->fork[left]);
 		return (false);
 	}
-	log_status(philo, "has taken fork");
+	log_status(philo, "has taken a second fork");
 	return (true);
+}
+
+void	release_forks(t_philo *philo)
+{
+	int	left;
+	int	right;
+
+	left = philo->nb - 1;
+	right = philo->nb % philo->sim->rules.nb_of_philo;
+	if (left > right)
+		swap(&left, &right);
+	pthread_mutex_unlock(&philo->sim->fork[left]);
+	pthread_mutex_unlock(&philo->sim->fork[right]);
+}
+
+void	start_eating(t_philo *philo)
+{
+	philo->state = IS_EATING;
+	log_status(philo, "is eating");
+	usleep(philo->sim->rules.time_to_eat * 1000);
+	gettimeofday(&philo->last_meal, NULL);
+}
+
+void	start_sleeping(t_philo *philo)
+{
+	philo->state = IS_SLEEPING;
+	log_status(philo, "is sleeping");
+	usleep(philo->sim->rules.time_to_sleep * 1000);
+}
+
+void	start_thinking(t_philo *philo)
+{
+	philo->state = IS_THINKING;
+	log_status(philo, "is thinking");
+	usleep(1000);
+}
+
+bool	someone_died(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->sim->death_check);
+	if (philo->sim->is_dead == true)
+		return (true);
+	else
+	{
+
 }
 
 void	*start_dinner(void *arg)
@@ -125,23 +105,25 @@ void	*start_dinner(void *arg)
 
 	philo = arg;
 	nb_of_meal = 0;
-	init_last_meal(philo);
+	 init_last_meal(philo);
 	if (philo->nb % 2 == 0)
 	{
 		usleep(1000);
 	}
 	while (1)//sim_is_running(philo))
 	{
+		if (someone died(philo))
+			return (NULL);
 		if (locks_two_forks_in_order(philo))
 		{
-	//		start_eating();
-	//		release_forks();
+			start_eating(philo);
+			nb_of_meal++;
+			release_forks(philo);
 			if (nb_of_meal_reached(philo, nb_of_meal) == true)
 				break ;
-	//		start_sleeping();
-	//		start_thinking();
-	//		nb_of_meal++;
+			start_sleeping(philo);
 		}
+		start_thinking(philo);
 	}
 	return (NULL);
 }
@@ -155,7 +137,7 @@ void	launch_simulation(t_simulation *sim)
 	ret = 0;
 	if (gettimeofday(&sim->starting_time, NULL) != SUCCESS)
 	{
-		printf("syscall error\n");
+		printf("error:gettimeofday before starting of dinner\n");
 		return ;
 	}
 	while (i != sim->rules.nb_of_philo)
@@ -195,4 +177,3 @@ int	main(int ac, char **argv)
 	launch_simulation(&sim);
 	return (EXIT_SUCCESS);
 }
-
