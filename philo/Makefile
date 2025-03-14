@@ -1,13 +1,15 @@
 NAME=philo
 
 CC= cc
-CFLAGS= -Wall -Wextra -Werror -pthread -g -fsanitize=address
+CFLAGS= -Wall -Wextra -Werror -pthread -g -fsanitize=thread
 DEBUG_FLAG= -fsanitize=thread
 
 SRCS= src/main.c \
 	  src/get_rules.c \
 	  src/init_simulation.c \
 	  src/utils.c \
+	  src/philo_cycle.c \
+	  src/sim_running_conditions.c \
 
 OBJS = $(SRCS:.c=.o)
 

@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 11:53:21 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/13 19:51:32 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/14 18:20:29 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ typedef struct s_philo
 	pthread_t			tid;
 	int					nb;
 	int					state;
+	int					nb_of_meal;
 	struct timeval		last_meal;
 	struct s_simulation	*sim;
 }	t_philo;
@@ -50,7 +51,9 @@ typedef struct s_simulation
 	pthread_mutex_t	*fork;
 	pthread_mutex_t	write_msg;
 	pthread_mutex_t	death_check;
+	pthread_mutex_t	run_check;
 	bool			is_dead;
+	bool			is_running;
 }	t_simulation;
 
 bool	get_rules(char **argv, t_rules *r);
@@ -59,6 +62,13 @@ bool	setup_dinner_table(char **argv, t_simulation *sim);
 int		ft_strlen(char *str);
 long	get_timestamp_ms(t_simulation *sim);
 void	log_status(t_philo *philo, char *str);
+void	terminate_simulation(t_simulation *sim);
+void	ft_usleep(t_philo *philo, long time_is_ms);
+bool	locks_two_forks_in_order(t_philo *philo);
+void	release_forks(t_philo *philo);
+void	start_eating(t_philo *philo);
+void	start_sleeping(t_philo *philo);
+void	monitoring(t_simulation *sim);
 
 # define FAIL -1
 # define SUCCESS 0

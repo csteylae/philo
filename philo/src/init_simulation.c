@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 13:22:05 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/11 18:23:08 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/14 18:28:18 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static bool	init_philo(t_simulation *sim)
 		sim->philo[i].nb = i + 1;
 		sim->philo[i].state = HUNGRY;
 		sim->philo[i].sim = sim;
-		//sim->philo[i].last_meal = NO_MEAL_YET;
+		sim->philo[i].nb_of_meal = 0;
 		i++;
 	}
 	return (true);
@@ -71,7 +71,10 @@ static bool	init_fork(t_simulation *sim)
 bool	setup_dinner_table(char **argv, t_simulation *sim)
 {
 	if (!get_rules(argv, &sim->rules))
+	{
+		printf("Error. Invalid parameter\n");
 		return (false);
+	}
 	if (!init_philo(sim))
 		return (false);
 	if (!init_fork(sim)) 
@@ -80,6 +83,9 @@ bool	setup_dinner_table(char **argv, t_simulation *sim)
 		return (false);
 	if (!init_mutex(&sim->death_check))
 		return (false);
+	if (!init_mutex(&sim->run_check))
+		return (false);
 	sim->is_dead = false;
+	sim->is_running = true;
 	return (true);
 }

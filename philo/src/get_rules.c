@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 13:06:38 by csteylae          #+#    #+#             */
-/*   Updated: 2025/01/22 13:22:38 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/14 14:43:49 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ static int	ft_atol(char *str)
 		i++;
 		if (ret < 0)
 		{
-			printf("Error. %s is not a valid integer type\n", str);
 			return (FAIL);
 		}
 	}
@@ -57,10 +56,7 @@ static int	init_var(char *str)
 
 	ret = 0;
 	if (!is_digit(str))
-	{
-		printf("Error. %s is not a positive digit\n", str);
 		return (-1);
-	}
 	ret = ft_atol(str);
 	return (ret);
 }
@@ -69,19 +65,15 @@ bool	get_rules(char **argv, t_rules *rule)
 {
 	rule->nb_of_philo = init_var(argv[1]);
 	if (rule->nb_of_philo <= 0)
-	{
-		if (rule->nb_of_philo == 0)
-			printf("Error. Must be at least 1 philo\n");
 		return (false);
-	}
 	rule->time_to_die = init_var(argv[2]);
-	if (rule->time_to_die < 0)
+	if (rule->time_to_die <= 0)
 		return (false);
 	rule->time_to_eat = init_var(argv[3]);
-	if(rule->time_to_eat < 0)
+	if(rule->time_to_eat <= 0)
 		return (false);
 	rule->time_to_sleep = init_var(argv[4]);
-	if (rule->time_to_sleep < 0)
+	if (rule->time_to_sleep <= 0)
 		return (false);
 	if (argv[5])
 		rule->nb_of_meal = init_var(argv[5]);

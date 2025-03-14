@@ -6,11 +6,27 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 16:19:48 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/13 17:25:59 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/14 18:15:57 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/philo.h"
+
+void	ft_usleep(t_philo *philo, long time_in_ms)
+{
+	long	start;
+	long	current_timestamp;
+
+	start = get_timestamp_ms(philo->sim);
+	while (1)
+	{
+		current_timestamp = get_timestamp_ms(philo->sim);
+		if (current_timestamp >= (start + time_in_ms))
+			break ;
+		usleep(100);
+	}
+	return ;
+}
 
 long	get_timestamp_ms(t_simulation *sim)
 {
@@ -40,18 +56,26 @@ void	log_status(t_philo *philo, char *str)
 
 	timestamp_in_ms = get_timestamp_ms(philo->sim);
 	pthread_mutex_lock(&philo->sim->write_msg);
-	printf("%lu philo %i %s\n", timestamp_in_ms, philo->nb, str);
+	if (philo->sim->is_running)
+		printf("%lu philo %i %s\n", timestamp_in_ms, philo->nb, str);
 	pthread_mutex_unlock(&philo->sim->write_msg);
 }
 
 void	init_last_meal(t_philo *philo)
 {
+
 	struct timeval	current_time;
 
 	gettimeofday(&current_time, NULL);
 	pthread_mutex_lock(&philo->sim->death_check);
 	philo->last_meal = current_time;
 	pthread_mutex_unlock(&philo->sim->death_check);
+}
+
+void	terminate_simulation(t_simulation *sim)
+{
+	free(sim->philo);
+	free(sim->fork);
 }
 
 int	ft_strlen(char *str)
