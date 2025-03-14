@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 15:49:16 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/14 18:26:57 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/14 19:32:49 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,28 +19,44 @@ void	*start_dinner(void *arg)
 	philo = arg;
 	init_last_meal(philo);
 	if (philo->nb % 2 == 0)
-	{
 		ft_usleep(philo, 1000);
-	}
 	while (1)
 	{
-		pthread_mutex_lock(&philo->sim->run_check);
-		if (!philo->sim->is_running)
-		{
-			pthread_mutex_unlock(&philo->sim->run_check);
-			break ;
-		}
-		pthread_mutex_unlock(&philo->sim->run_check);
+		if (!is_running(philo))
+			return (NULL);
 		if (locks_two_forks_in_order(philo))
 		{
+			if (!is_running(philo))
+			{
+				release_forks(philo);
+				return (NULL);
+			}
 			start_eating(philo);
+			if (!is_running(philo))
+				return (NULL);
 			philo->nb_of_meal++;
 			release_forks(philo);
+			if (!is_running(philo))
+				return (NULL);
 			start_sleeping(philo);
 		}
+		if (!is_running(philo))
+			return (NULL);
 		log_status(philo, "is thinking");
 	}
 	return (NULL);
+}
+
+void	end_of_simulation(t_simulation *sim)
+{
+	int	i;
+
+	i = 0;
+	while (i != sim->rules.nb_of_philo)
+	{
+		pthread_join(sim->philo[i].tid, NULL);
+		i++;
+	}
 }
 
 void	launch_simulation(t_simulation *sim)
@@ -52,27 +68,18 @@ void	launch_simulation(t_simulation *sim)
 	ret = 0;
 	if (gettimeofday(&sim->starting_time, NULL) != SUCCESS)
 	{
-		printf("error:gettimeofday before starting of dinner\n");
+		printf("error\n");
 		return ;
 	}
 	while (i != sim->rules.nb_of_philo)
 	{
 		ret = pthread_create(&sim->philo[i].tid, NULL, &start_dinner, &sim->philo[i]);
 		if (ret != SUCCESS)
-		{
-			//error_handling
 			return ;
-		}
 		i++;
 	}
 	monitoring(sim);
-	i = 0;
-	ret = 0;
-	while (i != sim->rules.nb_of_philo)
-	{
-		pthread_join(sim->philo[i].tid, NULL);
-		i++;
-	}
+	end_of_simulation(sim);
 }
 
 int	main(int ac, char **argv)

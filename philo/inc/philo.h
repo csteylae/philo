@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 11:53:21 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/14 18:20:29 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/14 19:33:18 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ typedef struct s_philo
 	int					nb;
 	int					state;
 	int					nb_of_meal;
-	struct timeval		last_meal;
+	long				last_meal;
 	struct s_simulation	*sim;
 }	t_philo;
 
@@ -69,6 +69,7 @@ void	release_forks(t_philo *philo);
 void	start_eating(t_philo *philo);
 void	start_sleeping(t_philo *philo);
 void	monitoring(t_simulation *sim);
+bool	is_running(t_philo *philo);
 
 # define FAIL -1
 # define SUCCESS 0

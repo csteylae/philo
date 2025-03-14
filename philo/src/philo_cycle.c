@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:41:30 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/14 17:42:37 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/14 19:43:37 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void	start_eating(t_philo *philo)
 	philo->state = IS_EATING;
 	log_status(philo, "is eating");
 	ft_usleep(philo, philo->sim->rules.time_to_eat);
-	gettimeofday(&philo->last_meal, NULL);
+	philo->last_meal = get_timestamp_ms(philo->sim);
 }
 
 void	start_sleeping(t_philo *philo)
