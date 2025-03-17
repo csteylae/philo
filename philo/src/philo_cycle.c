@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:41:30 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/14 19:43:37 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/17 17:52:21 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ bool	locks_two_forks_in_order(t_philo *philo)
 		swap(&left, &right);
 	if (pthread_mutex_lock(&philo->sim->fork[left]) != SUCCESS)
 	{
-
 		log_status(philo, "cannot take a first fork");
 		return (false);
 	}
@@ -40,7 +39,6 @@ bool	locks_two_forks_in_order(t_philo *philo)
 	if (pthread_mutex_lock(&philo->sim->fork[right]) != SUCCESS)
 	{
 		log_status(philo, "cannot take a second fork");
-		return (false);
 		pthread_mutex_unlock(&philo->sim->fork[left]);
 		return (false);
 	}
@@ -63,10 +61,15 @@ void	release_forks(t_philo *philo)
 
 void	start_eating(t_philo *philo)
 {
+	long	last_meal_update;
+
 	philo->state = IS_EATING;
 	log_status(philo, "is eating");
 	ft_usleep(philo, philo->sim->rules.time_to_eat);
-	philo->last_meal = get_timestamp_ms(philo->sim);
+	last_meal_update = get_timestamp_ms(philo->sim);
+	pthread_mutex_lock(&philo->sim->death_check);
+	philo->last_meal = last_meal_update;
+	pthread_mutex_unlock(&philo->sim->death_check);
 }
 
 void	start_sleeping(t_philo *philo)

@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 11:53:21 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/14 19:33:18 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/17 15:11:58 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,11 @@ typedef struct s_simulation
 	t_philo			*philo;
 	pthread_mutex_t	*fork;
 	pthread_mutex_t	write_msg;
-	pthread_mutex_t	death_check;
 	pthread_mutex_t	run_check;
-	bool			is_dead;
 	bool			is_running;
+	pthread_mutex_t	death_check;
+	bool			is_dead;
+	pthread_mutex_t	meal_nb_check;
 }	t_simulation;
 
 bool	get_rules(char **argv, t_rules *r);

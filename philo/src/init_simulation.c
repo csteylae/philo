@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 13:22:05 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/14 18:28:18 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/17 16:40:27 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static bool	init_philo(t_simulation *sim)
 	sim->philo = malloc(sizeof(*sim->philo) * sim->rules.nb_of_philo);
 	if (!sim->philo)
 	{
-		perror("malloc");
+		printf("Error : malloc\n");
 		return (false);
 	}
 	while (i != sim->rules.nb_of_philo)
@@ -29,6 +29,7 @@ static bool	init_philo(t_simulation *sim)
 		sim->philo[i].state = HUNGRY;
 		sim->philo[i].sim = sim;
 		sim->philo[i].nb_of_meal = 0;
+		sim->philo[i].last_meal = 0;
 		i++;
 	}
 	return (true);
@@ -84,6 +85,8 @@ bool	setup_dinner_table(char **argv, t_simulation *sim)
 	if (!init_mutex(&sim->death_check))
 		return (false);
 	if (!init_mutex(&sim->run_check))
+		return (false);
+	if (!init_mutex(&sim->meal_nb_check))
 		return (false);
 	sim->is_dead = false;
 	sim->is_running = true;

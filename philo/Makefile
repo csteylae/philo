@@ -30,7 +30,7 @@ re: fclean
 debug: CFLAGS += $(DEBUG_FLAG)
 debug: re
 	  
-VALGRIND : $(NAME)
+valgrind : $(NAME)
 	valgrind --tool=helgrind ./$(NAME)
 valgrind_drd : $(NAME)
 	valgrind --tool=drd ./$(NAME)

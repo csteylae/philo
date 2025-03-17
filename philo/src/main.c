@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 15:49:16 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/14 19:32:49 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/17 17:46:40 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@ void	*start_dinner(void *arg)
 
 	philo = arg;
 	init_last_meal(philo);
-	if (philo->nb % 2 == 0)
-		ft_usleep(philo, 1000);
+//	if (philo->nb % 2 == 0)
+//		ft_usleep(philo, 10);
 	while (1)
 	{
 		if (!is_running(philo))
@@ -33,7 +33,10 @@ void	*start_dinner(void *arg)
 			}
 			start_eating(philo);
 			if (!is_running(philo))
+			{
+				release_forks(philo);
 				return (NULL);
+			}
 			philo->nb_of_meal++;
 			release_forks(philo);
 			if (!is_running(philo))
@@ -78,7 +81,7 @@ void	launch_simulation(t_simulation *sim)
 			return ;
 		i++;
 	}
-	monitoring(sim);
+	monitoring(sim); //main_thread_monitoring
 	end_of_simulation(sim);
 }
 
