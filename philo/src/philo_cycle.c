@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:41:30 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/17 17:52:21 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/19 17:21:52 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ bool	locks_two_forks_in_order(t_philo *philo)
 		log_status(philo, "cannot take a first fork");
 		return (false);
 	}
-	log_status(philo, "has taken fork");
+	log_status(philo, "has taken a fork");
 	if (pthread_mutex_lock(&philo->sim->fork[right]) != SUCCESS)
 	{
 		log_status(philo, "cannot take a second fork");
@@ -63,13 +63,15 @@ void	start_eating(t_philo *philo)
 {
 	long	last_meal_update;
 
-	philo->state = IS_EATING;
 	log_status(philo, "is eating");
 	ft_usleep(philo, philo->sim->rules.time_to_eat);
 	last_meal_update = get_timestamp_ms(philo->sim);
 	pthread_mutex_lock(&philo->sim->death_check);
 	philo->last_meal = last_meal_update;
 	pthread_mutex_unlock(&philo->sim->death_check);
+	pthread_mutex_lock(&philo->sim->meal_nb_check);
+	philo->nb_of_meal++;
+	pthread_mutex_unlock(&philo->sim->meal_nb_check);
 }
 
 void	start_sleeping(t_philo *philo)

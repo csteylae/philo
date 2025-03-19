@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 11:53:21 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/17 15:11:58 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/19 12:41:25 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ void	start_eating(t_philo *philo);
 void	start_sleeping(t_philo *philo);
 void	monitoring(t_simulation *sim);
 bool	is_running(t_philo *philo);
+bool	nb_of_meal_reached(t_philo *philo);
 
 # define FAIL -1
 # define SUCCESS 0

@@ -6,11 +6,21 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 15:49:16 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/17 17:46:40 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/19 17:42:14 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/philo.h"
+
+void	*handle_single_philo(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->sim->fork[0]);
+	log_status(philo, "has taken a fork");
+	while (is_running(philo))
+		ft_usleep(philo, 10);
+	pthread_mutex_unlock(&philo->sim->fork[0]);
+	return (NULL);
+}
 
 void	*start_dinner(void *arg)
 {
@@ -18,33 +28,39 @@ void	*start_dinner(void *arg)
 
 	philo = arg;
 	init_last_meal(philo);
-//	if (philo->nb % 2 == 0)
-//		ft_usleep(philo, 10);
-	while (1)
+	if (philo->nb % 2 == 0)
+		ft_usleep(philo, 1);
+	while (is_running(philo))
 	{
-		if (!is_running(philo))
-			return (NULL);
+		if (philo->sim->rules.nb_of_philo == 1)
+			return (handle_single_philo(philo));
+		if (is_running(philo) && nb_of_meal_reached(philo))
+		{
+			ft_usleep(philo, 100);
+			continue;
+		}
+//		if (!is_running(philo))
+//			return (NULL);
 		if (locks_two_forks_in_order(philo))
 		{
-			if (!is_running(philo))
-			{
-				release_forks(philo);
-				return (NULL);
-			}
+//			if (!is_running(philo))
+//			{
+//				release_forks(philo);
+//				return (NULL);
+//			}
 			start_eating(philo);
-			if (!is_running(philo))
-			{
-				release_forks(philo);
-				return (NULL);
-			}
-			philo->nb_of_meal++;
+//			if (!is_running(philo))
+//			{
+//				release_forks(philo);
+//				return (NULL);
+//			}
 			release_forks(philo);
-			if (!is_running(philo))
-				return (NULL);
+//			if (!is_running(philo))
+//				return (NULL);
 			start_sleeping(philo);
 		}
-		if (!is_running(philo))
-			return (NULL);
+//		if (!is_running(philo))
+//			return (NULL);
 		log_status(philo, "is thinking");
 	}
 	return (NULL);

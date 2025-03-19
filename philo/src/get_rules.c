@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 13:06:38 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/14 14:43:49 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/19 16:59:28 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static bool	is_digit(char *str)
 static int	ft_atol(char *str)
 {
 	size_t	i;
-	int	ret;
+	int		ret;
 
 	i = 0;
 	ret = 0;
@@ -70,7 +70,7 @@ bool	get_rules(char **argv, t_rules *rule)
 	if (rule->time_to_die <= 0)
 		return (false);
 	rule->time_to_eat = init_var(argv[3]);
-	if(rule->time_to_eat <= 0)
+	if (rule->time_to_eat <= 0)
 		return (false);
 	rule->time_to_sleep = init_var(argv[4]);
 	if (rule->time_to_sleep <= 0)
