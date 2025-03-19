@@ -6,25 +6,13 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:46:44 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/19 17:28:30 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/19 18:20:29 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/philo.h"
 
-/* 
-   This is the main thread that will monitor the lifecycle of the philo threads.
-   To do it, we will need to verify certains datas of the philos threads. 
-   To avoid datarace we need to protect each data the the monitoring main thread
-   will verifiy by a mutex.
-   In order to verify the lifecycle we need to verify :
-   1. If the number of meal is set and reached, we need to stop the sim for that thread.
-   2. If actual_time - last_meal is > time_to_die, the philo dies from starvation.
-   
-   If a philo dies from starvation we have to terminate the simulation for every philo.
-*/
-   
-bool is_running(t_philo *philo)
+bool	is_running(t_philo *philo)
 {
 	bool	is_running;
 
@@ -46,7 +34,6 @@ bool	dies_from_starvation(t_philo *philo)
 	dead = false;
 	pthread_mutex_lock(&philo->sim->death_check);
 	last_meal = philo->last_meal;
-//	pthread_mutex_unlock(&philo->sim->death_check);
 	if (current_time - last_meal >= time_to_die)
 	{
 		philo->sim->is_dead = true;
@@ -90,7 +77,8 @@ bool	all_meals_goal_check(t_simulation *sim)
 void	monitoring(t_simulation *sim)
 {
 	int		i;
-	
+	long	time_of_death;
+
 	i = 0;
 	while (1)
 	{
@@ -98,13 +86,14 @@ void	monitoring(t_simulation *sim)
 			i = 0;
 		if (dies_from_starvation(&sim->philo[i]))
 		{
+			time_of_death = get_timestamp_ms(sim);
 			pthread_mutex_lock(&sim->write_msg);
-			printf("%lu philo %i died\n", get_timestamp_ms(sim), sim->philo[i].nb);
+			printf("%lu philo %i died\n", time_of_death, sim->philo[i].nb);
 			pthread_mutex_unlock(&sim->write_msg);
-			break;
+			break ;
 		}
 		if (all_meals_goal_check(sim))
-			break;
+			break ;
 		i++;
 	}
 	pthread_mutex_lock(&sim->run_check);

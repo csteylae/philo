@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 16:19:48 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/19 17:34:18 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/19 18:24:22 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,10 +64,7 @@ void	log_status(t_philo *philo, char *str)
 	pthread_mutex_lock(&philo->sim->write_msg);
 	if (is_running(philo))
 	{
-//		timestamp_in_ms = get_timestamp_ms(philo->sim);
-		//pthread_mutex_lock(&philo->sim->write_msg);
 		printf("%lu philo %i %s\n", timestamp_in_ms, philo->nb, str);
-//		pthread_mutex_unlock(&philo->sim->write_msg);
 	}
 	pthread_mutex_unlock(&philo->sim->write_msg);
 }
@@ -82,7 +79,12 @@ void	init_last_meal(t_philo *philo)
 void	terminate_simulation(t_simulation *sim)
 {
 	free(sim->philo);
+	destroy_all_mutex(sim->fork, sim->rules.nb_of_philo);
 	free(sim->fork);
+	pthread_mutex_destroy(&sim->write_msg);
+	pthread_mutex_destroy(&sim->run_check);
+	pthread_mutex_destroy(&sim->death_check);
+	pthread_mutex_destroy(&sim->meal_nb_check);
 }
 
 int	ft_strlen(char *str)

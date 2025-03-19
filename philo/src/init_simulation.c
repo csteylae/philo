@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 13:22:05 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/17 16:40:27 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/19 18:22:19 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,18 @@ static bool	init_mutex(pthread_mutex_t *mutex)
 	return (true);
 }
 
+void	destroy_all_mutex(pthread_mutex_t *array, int len)
+{
+	int	i;
+
+	i = 0;
+	while (i != len)
+	{
+		pthread_mutex_destroy(&array[i]);
+		i++;
+	}
+}
+
 static bool	init_fork(t_simulation *sim)
 {
 	int	i;
@@ -53,7 +65,7 @@ static bool	init_fork(t_simulation *sim)
 	sim->fork = malloc(sizeof(pthread_mutex_t) * sim->rules.nb_of_philo);
 	if (!sim->fork)
 	{
-	//	free(sim->philo);
+		free(sim->philo);
 		write(STDERR_FILENO, MALLOC_ERROR, ft_strlen(MALLOC_ERROR));
 		return (false);
 	}
@@ -61,7 +73,7 @@ static bool	init_fork(t_simulation *sim)
 	{
 		if (!init_mutex(&sim->fork[i]))
 		{
-			//free all the already mutex initialized
+			destroy_all_mutex(sim->fork, i);
 			return (false);
 		}
 		i++;
@@ -78,7 +90,7 @@ bool	setup_dinner_table(char **argv, t_simulation *sim)
 	}
 	if (!init_philo(sim))
 		return (false);
-	if (!init_fork(sim)) 
+	if (!init_fork(sim))
 		return (false);
 	if (!init_mutex(&sim->write_msg))
 		return (false);

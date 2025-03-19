@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 15:49:16 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/19 17:42:14 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/19 18:16:30 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,30 +37,14 @@ void	*start_dinner(void *arg)
 		if (is_running(philo) && nb_of_meal_reached(philo))
 		{
 			ft_usleep(philo, 100);
-			continue;
+			continue ;
 		}
-//		if (!is_running(philo))
-//			return (NULL);
 		if (locks_two_forks_in_order(philo))
 		{
-//			if (!is_running(philo))
-//			{
-//				release_forks(philo);
-//				return (NULL);
-//			}
 			start_eating(philo);
-//			if (!is_running(philo))
-//			{
-//				release_forks(philo);
-//				return (NULL);
-//			}
 			release_forks(philo);
-//			if (!is_running(philo))
-//				return (NULL);
 			start_sleeping(philo);
 		}
-//		if (!is_running(philo))
-//			return (NULL);
 		log_status(philo, "is thinking");
 	}
 	return (NULL);
@@ -92,12 +76,10 @@ void	launch_simulation(t_simulation *sim)
 	}
 	while (i != sim->rules.nb_of_philo)
 	{
-		ret = pthread_create(&sim->philo[i].tid, NULL, &start_dinner, &sim->philo[i]);
-		if (ret != SUCCESS)
-			return ;
+		pthread_create(&sim->philo[i].tid, NULL, &start_dinner, &sim->philo[i]);
 		i++;
 	}
-	monitoring(sim); //main_thread_monitoring
+	monitoring(sim);
 	end_of_simulation(sim);
 }
 
@@ -107,8 +89,7 @@ int	main(int ac, char **argv)
 
 	if (ac != 5 && ac != 6)
 	{
-		printf("Error. Please enter:\n");
-		printf("nb_of_philo, time_to_die, time_to_eat, time to_sleep, nb_of_meal(optionnal)\n");
+		printf(PARAM_NB_ERROR);
 		return (EXIT_FAILURE);
 	}
 	if (!setup_dinner_table(argv, &sim))

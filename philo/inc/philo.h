@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 11:53:21 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/19 12:41:25 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/19 18:23:10 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ void	start_sleeping(t_philo *philo);
 void	monitoring(t_simulation *sim);
 bool	is_running(t_philo *philo);
 bool	nb_of_meal_reached(t_philo *philo);
+void	destroy_all_mutex(pthread_mutex_t *array, int len);
 
 # define FAIL -1
 # define SUCCESS 0
@@ -83,5 +84,8 @@ bool	nb_of_meal_reached(t_philo *philo);
 # define NO_MEAL_YET -1
 # define MUTEX_INIT_ERROR "Error when pthread_init_mutex"
 # define MALLOC_ERROR "Error cannot malloc"
+# define PARAM_NB_ERROR "Error. Please enter:\n\
+						nb_of_philo, time_to_die, time_to_eat, time to_sleep,\
+						nb_of_meal(optionnal)\n"
 
 #endif
