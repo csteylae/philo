@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 15:49:16 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/19 18:16:30 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/20 17:49:33 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,11 @@ void	*start_dinner(void *arg)
 
 	philo = arg;
 	init_last_meal(philo);
-	if (philo->nb % 2 == 0)
-		ft_usleep(philo, 1);
+	if (philo->sim->rules.nb_of_philo == 1)
+		return (handle_single_philo(philo));
 	while (is_running(philo))
 	{
-		if (philo->sim->rules.nb_of_philo == 1)
-			return (handle_single_philo(philo));
-		if (is_running(philo) && nb_of_meal_reached(philo))
+		if (nb_of_meal_reached(philo))
 		{
 			ft_usleep(philo, 100);
 			continue ;
@@ -65,10 +63,8 @@ void	end_of_simulation(t_simulation *sim)
 void	launch_simulation(t_simulation *sim)
 {
 	int	i;
-	int	ret;
 
 	i = 0;
-	ret = 0;
 	if (gettimeofday(&sim->starting_time, NULL) != SUCCESS)
 	{
 		printf("error\n");
@@ -92,7 +88,17 @@ int	main(int ac, char **argv)
 		printf(PARAM_NB_ERROR);
 		return (EXIT_FAILURE);
 	}
-	if (!setup_dinner_table(argv, &sim))
+	if (!get_rules(argv, &sim.rules))
+	{
+		printf("Error. Invalid parameter\n");
+		return (EXIT_FAILURE);
+	}
+	if (ac == 6 && sim.rules.nb_of_meal == 0)
+	{
+		printf("Simulation ends immediately: philos needs to eat 0 times\n");
+		exit(EXIT_SUCCESS);
+	}
+	if (!setup_dinner_table(&sim))
 	{
 		terminate_simulation(&sim);
 		return (EXIT_FAILURE);

@@ -1,7 +1,7 @@
 NAME=philo
 
 CC= cc
-CFLAGS= -Wall -Wextra -Werror -g -pthread -fsanitize=thread
+CFLAGS= -Wall -Wextra -Werror #-g -pthread -fsanitize=thread
 DEBUG_FLAG= -fsanitize=thread
 
 SRCS= src/main.c \
@@ -9,7 +9,8 @@ SRCS= src/main.c \
 	  src/init_simulation.c \
 	  src/utils.c \
 	  src/philo_cycle.c \
-	  src/sim_running_conditions.c \
+	  src/monitoring.c \
+	  src/terminate_sim.c \
 
 OBJS = $(SRCS:.c=.o)
 

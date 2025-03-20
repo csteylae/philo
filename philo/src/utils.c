@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 16:19:48 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/19 18:24:22 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/20 15:41:38 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ void	ft_usleep(t_philo *philo, long time_in_ms)
 	while (1)
 	{
 		current_timestamp = get_timestamp_ms(philo->sim);
+		if (!is_running(philo))
+			return ;
 		if (current_timestamp >= (start + time_in_ms))
 			break ;
 		usleep(100);
@@ -74,17 +76,6 @@ void	init_last_meal(t_philo *philo)
 	pthread_mutex_lock(&philo->sim->death_check);
 	philo->last_meal = get_timestamp_ms(philo->sim);
 	pthread_mutex_unlock(&philo->sim->death_check);
-}
-
-void	terminate_simulation(t_simulation *sim)
-{
-	free(sim->philo);
-	destroy_all_mutex(sim->fork, sim->rules.nb_of_philo);
-	free(sim->fork);
-	pthread_mutex_destroy(&sim->write_msg);
-	pthread_mutex_destroy(&sim->run_check);
-	pthread_mutex_destroy(&sim->death_check);
-	pthread_mutex_destroy(&sim->meal_nb_check);
 }
 
 int	ft_strlen(char *str)

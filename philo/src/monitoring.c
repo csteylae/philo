@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sim_running_conditions.c                           :+:      :+:    :+:   */
+/*   monitoring.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:46:44 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/19 18:20:29 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/20 17:58:30 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,10 +61,8 @@ bool	nb_of_meal_reached(t_philo *philo)
 bool	all_meals_goal_check(t_simulation *sim)
 {
 	int	i;
-	int	nb_of_meal;
 
 	i = 0;
-	nb_of_meal = 0;
 	while (i != sim->rules.nb_of_philo)
 	{
 		if (!nb_of_meal_reached(&sim->philo[i]))
@@ -74,6 +72,42 @@ bool	all_meals_goal_check(t_simulation *sim)
 	return (true);
 }
 
+void	monitoring(t_simulation *sim)
+{
+	int	i;
+	long time_of_death;
+
+	i = 0;
+	while (1)
+	{
+		i = 0;
+		while (i != sim->rules.nb_of_philo)
+		{
+			if (dies_from_starvation(&sim->philo[i]))
+			{
+				time_of_death = get_timestamp_ms(sim);
+				pthread_mutex_lock(&sim->write_msg);
+				printf("%lu philo %i died\n", time_of_death, sim->philo[i].nb);
+				pthread_mutex_unlock(&sim->write_msg);
+				pthread_mutex_lock(&sim->run_check);
+				sim->is_running = false;
+				pthread_mutex_unlock(&sim->run_check);
+				return ;
+			}
+			if (all_meals_goal_check(sim))
+			{
+				pthread_mutex_lock(&sim->run_check);
+				sim->is_running = false;
+				pthread_mutex_unlock(&sim->run_check);
+				return ;
+			}
+			i++;
+		}
+		usleep(5);
+	}
+}
+
+/*
 void	monitoring(t_simulation *sim)
 {
 	int		i;
@@ -100,3 +134,4 @@ void	monitoring(t_simulation *sim)
 	sim->is_running = false;
 	pthread_mutex_unlock(&sim->run_check);
 }
+*/

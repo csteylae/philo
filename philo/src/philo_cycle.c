@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:41:30 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/19 17:21:52 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/20 18:08:06 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,22 @@ bool	locks_two_forks_in_order(t_philo *philo)
 	right = philo->nb % philo->sim->rules.nb_of_philo;
 	if (left > right)
 		swap(&left, &right);
+	if (philo->nb % 2 == 0)
+	{
+		pthread_mutex_lock(&philo->sim->fork[left]);
+		log_status(philo, "has taken a fork");
+		pthread_mutex_lock(&philo->sim->fork[right]);
+		log_status(philo, "has taken a second fork");
+	}
+	else
+	{
+		pthread_mutex_lock(&philo->sim->fork[right]);
+		log_status(philo, "has taken a fork");
+		pthread_mutex_lock(&philo->sim->fork[left]);
+		log_status(philo, "has taken a second fork");
+	}
+	return (true);
+/*
 	if (pthread_mutex_lock(&philo->sim->fork[left]) != SUCCESS)
 	{
 		log_status(philo, "cannot take a first fork");
@@ -44,6 +60,7 @@ bool	locks_two_forks_in_order(t_philo *philo)
 	}
 	log_status(philo, "has taken a second fork");
 	return (true);
+*/
 }
 
 void	release_forks(t_philo *philo)
@@ -64,14 +81,16 @@ void	start_eating(t_philo *philo)
 	long	last_meal_update;
 
 	log_status(philo, "is eating");
-	ft_usleep(philo, philo->sim->rules.time_to_eat);
-	last_meal_update = get_timestamp_ms(philo->sim);
+
 	pthread_mutex_lock(&philo->sim->death_check);
+	last_meal_update = get_timestamp_ms(philo->sim);
 	philo->last_meal = last_meal_update;
 	pthread_mutex_unlock(&philo->sim->death_check);
+
 	pthread_mutex_lock(&philo->sim->meal_nb_check);
 	philo->nb_of_meal++;
 	pthread_mutex_unlock(&philo->sim->meal_nb_check);
+	ft_usleep(philo, philo->sim->rules.time_to_eat);
 }
 
 void	start_sleeping(t_philo *philo)

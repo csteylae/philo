@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/17 13:06:38 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/19 16:59:28 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/20 15:08:34 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,8 @@ bool	get_rules(char **argv, t_rules *rule)
 	else
 		rule->nb_of_meal = UNLIMITED_MEAL;
 	if (rule->nb_of_meal < 0)
+		return (false);
+	if (rule->nb_of_philo > 10000)
 		return (false);
 	return (true);
 }
