@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 16:19:48 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/20 15:41:38 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/25 17:35:21 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,9 @@ void	ft_usleep(t_philo *philo, long time_in_ms)
 		if (!is_running(philo))
 			return ;
 		if (current_timestamp >= (start + time_in_ms))
-			break ;
-		usleep(100);
+			return ;
+		usleep(10);
 	}
-	return ;
 }
 
 long	get_timestamp_ms(t_simulation *sim)
@@ -62,20 +61,20 @@ void	log_status(t_philo *philo, char *str)
 	pthread_mutex_unlock(&philo->sim->death_check);
 	if (is_dead)
 		return ;
+//	if (is_running(philo))
+//	{
 	timestamp_in_ms = get_timestamp_ms(philo->sim);
 	pthread_mutex_lock(&philo->sim->write_msg);
-	if (is_running(philo))
-	{
-		printf("%lu philo %i %s\n", timestamp_in_ms, philo->nb, str);
-	}
+	printf("%lu philo %i %s\n", timestamp_in_ms, philo->nb, str);
 	pthread_mutex_unlock(&philo->sim->write_msg);
+//	}
 }
 
 void	init_last_meal(t_philo *philo)
 {
-	pthread_mutex_lock(&philo->sim->death_check);
+	pthread_mutex_lock(&philo->state);
 	philo->last_meal = get_timestamp_ms(philo->sim);
-	pthread_mutex_unlock(&philo->sim->death_check);
+	pthread_mutex_unlock(&philo->state);
 }
 
 int	ft_strlen(char *str)

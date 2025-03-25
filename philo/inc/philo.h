@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 11:53:21 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/20 14:59:29 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/25 16:56:59 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ typedef struct s_philo
 {
 	pthread_t			tid;
 	int					nb;
-	int					state;
+	pthread_mutex_t		state;
 	int					nb_of_meal;
 	long				last_meal;
 	struct s_simulation	*sim;
@@ -49,12 +49,12 @@ typedef struct s_simulation
 	t_rules			rules;
 	t_philo			*philo;
 	pthread_mutex_t	*fork;
+//	bool			*fork_available;
 	pthread_mutex_t	write_msg;
 	pthread_mutex_t	run_check;
 	bool			is_running;
 	pthread_mutex_t	death_check;
 	bool			is_dead;
-	pthread_mutex_t	meal_nb_check;
 }	t_simulation;
 
 bool	get_rules(char **argv, t_rules *r);
@@ -72,7 +72,8 @@ void	start_sleeping(t_philo *philo);
 void	monitoring(t_simulation *sim);
 bool	is_running(t_philo *philo);
 bool	nb_of_meal_reached(t_philo *philo);
-void	destroy_all_mutex(pthread_mutex_t *array, int len);
+void	destroy_forks(pthread_mutex_t *array, int len);
+void	free_philo_array(t_philo *array, int len);
 
 # define FAIL -1
 # define SUCCESS 0
