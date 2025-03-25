@@ -107,6 +107,6 @@ void	monitoring(t_simulation *sim)
 			}
 			i++;
 		}
-		usleep(5);
+		usleep(1000);
 	}
 }

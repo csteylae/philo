@@ -15,17 +15,24 @@
 void	ft_usleep(t_philo *philo, long time_in_ms)
 {
 	long	start;
-	long	current_timestamp;
+	long	elapsed;
+	long	remaining;
 
 	start = get_timestamp_ms(philo->sim);
-	while (1)
+	elapsed = 0;
+	remaining = 0;
+	if (time_in_ms < 10)
+		return ;
+	while (elapsed < time_in_ms)
 	{
-		current_timestamp = get_timestamp_ms(philo->sim);
-		if (!is_running(philo))
+		if (elapsed % 50 == 0 && !is_running(philo))
 			return ;
-		if (current_timestamp >= (start + time_in_ms))
-			return ;
-		usleep(10);
+		remaining = time_in_ms - elapsed;
+		if (remaining < 50)
+			usleep(50);
+		else
+			usleep(500);
+		elapsed = get_timestamp_ms(philo->sim) - start;
 	}
 }
 

@@ -32,8 +32,6 @@ void	*start_dinner(void *arg)
 	init_last_meal(philo);
 	if (philo->sim->rules.nb_of_philo == 1)
 		return (handle_single_philo(philo));
-//	if (philo->nb % 2 != 0)
-//		ft_usleep(philo, 100);
 	while (is_running(philo))
 	{
 		if (nb_of_meal_reached(philo))
@@ -50,7 +48,7 @@ void	*start_dinner(void *arg)
 		log_status(philo, "is thinking");
 		if (philo->sim->rules.nb_of_philo % 2 != 0)
 		{
-			int time = ((philo->sim->rules.time_to_eat * 2)- philo->sim->rules.time_to_sleep);
+			int time = ((philo->sim->rules.time_to_eat / 2));
 			ft_usleep(philo, time);
 		}
 	}
@@ -84,6 +82,7 @@ void	launch_simulation(t_simulation *sim)
 		pthread_create(&sim->philo[i].tid, NULL, &start_dinner, &sim->philo[i]);
 		i++;
 	}
+	usleep(1000);
 	pthread_mutex_lock(&sim->run_check);
 	sim->is_running = true;
 	gettimeofday(&sim->starting_time, NULL);
