@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 16:19:48 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/25 17:35:21 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/26 18:39:58 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,14 +21,12 @@ void	ft_usleep(t_philo *philo, long time_in_ms)
 	start = get_timestamp_ms(philo->sim);
 	elapsed = 0;
 	remaining = 0;
-	if (time_in_ms < 10)
-		return ;
 	while (elapsed < time_in_ms)
 	{
 		if (elapsed % 50 == 0 && !is_running(philo))
 			return ;
 		remaining = time_in_ms - elapsed;
-		if (remaining < 50)
+		if (remaining < 100)
 			usleep(50);
 		else
 			usleep(500);

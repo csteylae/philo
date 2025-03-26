@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 15:49:16 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/25 17:30:39 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/26 18:43:27 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,12 @@ void	*start_dinner(void *arg)
 
 	philo = arg;
 	while (!is_running(philo))
-		ft_usleep(philo, 100);
+		ft_usleep(philo, 1);
 	init_last_meal(philo);
 	if (philo->sim->rules.nb_of_philo == 1)
 		return (handle_single_philo(philo));
+	if (philo->nb % 2 != 0)
+		ft_usleep(philo, philo->sim->rules.time_to_eat / 2);
 	while (is_running(philo))
 	{
 		if (nb_of_meal_reached(philo))
@@ -46,10 +48,13 @@ void	*start_dinner(void *arg)
 			start_sleeping(philo);
 		}
 		log_status(philo, "is thinking");
+		
+		if (philo->sim->rules.nb_of_philo % 2 != 0)
+			ft_usleep(philo, 10);
 //		if (philo->sim->rules.nb_of_philo % 2 != 0)
 //		{
-			int time = ((philo->sim->rules.time_to_eat / 2));
-			ft_usleep(philo, time);
+//		int time = ((philo->sim->rules.time_to_eat / 2) - philo->sim->rules.time_to_die);
+//		ft_usleep(philo, time);
 //		}
 	}
 	return (NULL);
