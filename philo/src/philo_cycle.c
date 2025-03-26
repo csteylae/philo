@@ -54,13 +54,24 @@ void	release_forks(t_philo *philo)
 {
 	int	left;
 	int	right;
+	int	first;
+	int	second;
 
 	left = philo->nb - 1;
 	right = philo->nb % philo->sim->rules.nb_of_philo;
-//	if (left > right)
-//		swap(&left, &right);
-	pthread_mutex_unlock(&philo->sim->fork[left]);
-	pthread_mutex_unlock(&philo->sim->fork[right]);
+
+	if (philo->nb % 2 == 0)
+	{
+		first = right;
+		second = left;
+	}
+	else
+	{
+		first = left;
+		second = right;
+	}
+	pthread_mutex_unlock(&philo->sim->fork[first]);
+	pthread_mutex_unlock(&philo->sim->fork[second]);
 }
 
 void	start_eating(t_philo *philo)

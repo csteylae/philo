@@ -46,11 +46,11 @@ void	*start_dinner(void *arg)
 			start_sleeping(philo);
 		}
 		log_status(philo, "is thinking");
-		if (philo->sim->rules.nb_of_philo % 2 != 0)
-		{
+//		if (philo->sim->rules.nb_of_philo % 2 != 0)
+//		{
 			int time = ((philo->sim->rules.time_to_eat / 2));
 			ft_usleep(philo, time);
-		}
+//		}
 	}
 	return (NULL);
 }
