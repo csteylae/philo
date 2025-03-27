@@ -6,11 +6,30 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 15:40:20 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/25 11:21:40 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/27 16:02:37 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/philo.h"
+
+void	stop_running(t_simulation *sim)
+{
+	pthread_mutex_lock(&sim->run_check);
+	sim->is_running = false;
+	pthread_mutex_unlock(&sim->run_check);
+}
+
+void	end_simulation(t_simulation *sim)
+{
+	int	i;
+
+	i = 0;
+	while (i != sim->rules.nb_of_philo)
+	{
+		pthread_join(sim->philo[i].tid, NULL);
+		i++;
+	}
+}
 
 void	destroy_forks(pthread_mutex_t *array, int len)
 {

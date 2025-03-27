@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:46:44 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/25 15:20:59 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/27 16:03:04 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ bool	is_running(t_philo *philo)
 	return (is_running);
 }
 
-bool	dies_from_starvation(t_philo *philo)
+static bool	dies_from_starvation(t_philo *philo)
 {
 	long	time_to_die;
 	long	current_time;
@@ -60,7 +60,7 @@ bool	nb_of_meal_reached(t_philo *philo)
 	return (false);
 }
 
-bool	all_meals_goal_check(t_simulation *sim)
+static bool	all_meals_goal_check(t_simulation *sim)
 {
 	int	i;
 
@@ -78,8 +78,8 @@ bool	all_meals_goal_check(t_simulation *sim)
 
 void	monitoring(t_simulation *sim)
 {
-	int	i;
-	long time_of_death;
+	int		i;
+	long	time_of_death;
 
 	i = 0;
 	while (1)
@@ -93,18 +93,10 @@ void	monitoring(t_simulation *sim)
 				pthread_mutex_lock(&sim->write_msg);
 				printf("%lu philo %i died\n", time_of_death, sim->philo[i].nb);
 				pthread_mutex_unlock(&sim->write_msg);
-				pthread_mutex_lock(&sim->run_check);
-				sim->is_running = false;
-				pthread_mutex_unlock(&sim->run_check);
-				return ;
+				return (stop_running(sim));
 			}
 			if (all_meals_goal_check(sim))
-			{
-				pthread_mutex_lock(&sim->run_check);
-				sim->is_running = false;
-				pthread_mutex_unlock(&sim->run_check);
-				return ;
-			}
+				return (stop_running(sim));
 			i++;
 		}
 		usleep(1000);

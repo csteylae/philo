@@ -2,9 +2,9 @@ NAME=philo
 
 CC= cc
 CFLAGS= -Wall -Wextra -Werror #-g -pthread -fsanitize=thread
-DEBUG_FLAG= -fsanitize=thread
 
 SRCS= src/main.c \
+	  src/simulation_launch.c \
 	  src/get_rules.c \
 	  src/init_simulation.c \
 	  src/utils.c \

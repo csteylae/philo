@@ -6,22 +6,11 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:41:30 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/26 17:53:50 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/27 12:32:33 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/philo.h"
-
-/*
-static void	swap(int *left, int *right)
-{
-	int	tmp;
-
-	tmp = *left;
-	*left = *right;
-	*right = tmp;
-}
-*/
 
 bool	locks_two_forks_in_order(t_philo *philo)
 {
@@ -32,7 +21,6 @@ bool	locks_two_forks_in_order(t_philo *philo)
 
 	left = philo->nb - 1;
 	right = philo->nb % philo->sim->rules.nb_of_philo;
-	
 	if (philo->nb % 2 == 0)
 	{
 		first = right;
@@ -59,7 +47,6 @@ void	release_forks(t_philo *philo)
 
 	left = philo->nb - 1;
 	right = philo->nb % philo->sim->rules.nb_of_philo;
-
 	if (philo->nb % 2 == 0)
 	{
 		first = right;

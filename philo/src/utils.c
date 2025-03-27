@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 16:19:48 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/26 18:39:58 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/27 16:02:59 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,20 +66,10 @@ void	log_status(t_philo *philo, char *str)
 	pthread_mutex_unlock(&philo->sim->death_check);
 	if (is_dead)
 		return ;
-//	if (is_running(philo))
-//	{
 	timestamp_in_ms = get_timestamp_ms(philo->sim);
 	pthread_mutex_lock(&philo->sim->write_msg);
 	printf("%lu philo %i %s\n", timestamp_in_ms, philo->nb, str);
 	pthread_mutex_unlock(&philo->sim->write_msg);
-//	}
-}
-
-void	init_last_meal(t_philo *philo)
-{
-	pthread_mutex_lock(&philo->state);
-	philo->last_meal = get_timestamp_ms(philo->sim);
-	pthread_mutex_unlock(&philo->state);
 }
 
 int	ft_strlen(char *str)

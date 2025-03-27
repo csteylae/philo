@@ -6,7 +6,7 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 11:53:21 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/25 16:56:59 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/27 16:01:58 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ typedef struct s_simulation
 	t_rules			rules;
 	t_philo			*philo;
 	pthread_mutex_t	*fork;
-//	bool			*fork_available;
 	pthread_mutex_t	write_msg;
 	pthread_mutex_t	run_check;
 	bool			is_running;
@@ -58,6 +57,7 @@ typedef struct s_simulation
 }	t_simulation;
 
 bool	get_rules(char **argv, t_rules *r);
+void	launch_simulation(t_simulation *sim);
 void	init_last_meal(t_philo *philo);
 bool	setup_dinner_table(t_simulation *sim);
 int		ft_strlen(char *str);
@@ -71,9 +71,11 @@ void	start_eating(t_philo *philo);
 void	start_sleeping(t_philo *philo);
 void	monitoring(t_simulation *sim);
 bool	is_running(t_philo *philo);
+void	stop_running(t_simulation *sim);
 bool	nb_of_meal_reached(t_philo *philo);
 void	destroy_forks(pthread_mutex_t *array, int len);
 void	free_philo_array(t_philo *array, int len);
+void	end_simulation(t_simulation *sim);
 
 # define FAIL -1
 # define SUCCESS 0

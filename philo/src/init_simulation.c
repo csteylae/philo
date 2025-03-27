@@ -6,11 +6,18 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 13:22:05 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/25 16:56:51 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/27 15:57:07 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/philo.h"
+
+void	init_last_meal(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->state);
+	philo->last_meal = get_timestamp_ms(philo->sim);
+	pthread_mutex_unlock(&philo->state);
+}
 
 static bool	init_mutex(pthread_mutex_t *mutex)
 {
@@ -71,15 +78,6 @@ static bool	init_fork(t_simulation *sim)
 		}
 		i++;
 	}
-	/*
-	i = 0;
-	sim->fork_available = malloc(sizeof(bool) * sim->rules.nb_of_philo);
-	while (i != sim->rules.nb_of_philo)
-	{
-		sim->fork_available[i] = true;
-		i++;
-	}
-	*/
 	return (true);
 }
 

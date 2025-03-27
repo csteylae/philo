@@ -6,95 +6,11 @@
 /*   By: csteylae <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/24 15:49:16 by csteylae          #+#    #+#             */
-/*   Updated: 2025/03/26 18:43:27 by csteylae         ###   ########.fr       */
+/*   Updated: 2025/03/27 15:52:59 by csteylae         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/philo.h"
-
-void	*handle_single_philo(t_philo *philo)
-{
-	pthread_mutex_lock(&philo->sim->fork[0]);
-	log_status(philo, "has taken a fork");
-	while (is_running(philo))
-		ft_usleep(philo, 10);
-	pthread_mutex_unlock(&philo->sim->fork[0]);
-	return (NULL);
-}
-
-void	*start_dinner(void *arg)
-{
-	t_philo			*philo;
-
-	philo = arg;
-	while (!is_running(philo))
-		ft_usleep(philo, 1);
-	init_last_meal(philo);
-	if (philo->sim->rules.nb_of_philo == 1)
-		return (handle_single_philo(philo));
-	if (philo->nb % 2 != 0)
-		ft_usleep(philo, philo->sim->rules.time_to_eat / 2);
-	while (is_running(philo))
-	{
-		if (nb_of_meal_reached(philo))
-		{
-			ft_usleep(philo, 100);
-			continue ;
-		}
-		if (locks_two_forks_in_order(philo))
-		{
-			start_eating(philo);
-			release_forks(philo);
-			start_sleeping(philo);
-		}
-		log_status(philo, "is thinking");
-		
-		if (philo->sim->rules.nb_of_philo % 2 != 0)
-			ft_usleep(philo, 10);
-//		if (philo->sim->rules.nb_of_philo % 2 != 0)
-//		{
-//		int time = ((philo->sim->rules.time_to_eat / 2) - philo->sim->rules.time_to_die);
-//		ft_usleep(philo, time);
-//		}
-	}
-	return (NULL);
-}
-
-void	end_of_simulation(t_simulation *sim)
-{
-	int	i;
-
-	i = 0;
-	while (i != sim->rules.nb_of_philo)
-	{
-		pthread_join(sim->philo[i].tid, NULL);
-		i++;
-	}
-}
-
-void	launch_simulation(t_simulation *sim)
-{
-	int	i;
-
-	i = 0;
-	if (gettimeofday(&sim->starting_time, NULL) != SUCCESS)
-	{
-		printf("error\n");
-		return ;
-	}
-	while (i != sim->rules.nb_of_philo)
-	{
-		pthread_create(&sim->philo[i].tid, NULL, &start_dinner, &sim->philo[i]);
-		i++;
-	}
-	usleep(1000);
-	pthread_mutex_lock(&sim->run_check);
-	sim->is_running = true;
-	gettimeofday(&sim->starting_time, NULL);
-	pthread_mutex_unlock(&sim->run_check);
-	monitoring(sim);
-	end_of_simulation(sim);
-}
 
 int	main(int ac, char **argv)
 {
